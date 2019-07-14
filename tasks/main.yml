@@ -1,3 +1,29 @@
 ---
 - include_tasks: versioncheck.yml
   when: submodules_versioncheck|bool
+
+- name: Create cronjob to get time data
+  become: true
+  cron:
+    name: "update info-beamer shedule"
+    minute: "*/20"
+    job: "make -B -C /home/info/content/ all"
+    user: root
+    cron_file: '/etc/crontab'
+
+- name: copy systemd file for info-beamer-timectrl
+  become: true
+  copy:
+    src: info-beamer-timectrl.service
+    dest: /etc/systemd/system/info-beamer-timectrl.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: start info-beamer-timectrl.service
+  become: true
+  systemd: 
+    state: started
+    name: info-beamer-timectrl.service
+    daemon_reload: yes
+    enabled: yes
