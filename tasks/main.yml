@@ -20,8 +20,15 @@
     name:
      - setuptools
      - pytz
+     - python-dateutil
     state: present
     executable: /usr/bin/pip3
+
+- name: make shedule update
+  become: true
+  make:
+    chdir: /home/info/content/
+    target: all
 
 - name: Create cronjob to get time data
   become: true
@@ -41,10 +48,10 @@
     group: root
     mode: 0644
 
-- name: start info-beamer-timectrl.service
+- name: restart info-beamer-timectrl.service
   become: true
   systemd: 
-    state: started
+    state: restarted
     name: info-beamer-timectrl.service
     daemon_reload: yes
     enabled: yes
