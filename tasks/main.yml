@@ -2,12 +2,33 @@
 - include_tasks: versioncheck.yml
   when: submodules_versioncheck|bool
 
+- name: install xtra python stuff for python
+  become: true
+  package:
+    name:
+     - python3
+     - python3-pip
+     - python-pip
+     - python3-setuptools
+     - python-setuptools
+     - xalan
+    state: present
+
+- name: install pip3 packages
+  become: true
+  pip:
+    name:
+     - setuptools
+     - pytz
+    state: present
+    executable: /usr/bin/pip3
+
 - name: Create cronjob to get time data
   become: true
   cron:
     name: "update info-beamer shedule"
-    minute: "*/20"
-    job: "make -B -C /home/info/content/ all"
+    minute: "*/15"
+    job: "sleep 30; make -B -C /home/info/content/ all"
     user: root
     cron_file: '/etc/crontab'
 
